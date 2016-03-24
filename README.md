@@ -19,7 +19,7 @@ Zet\AntiSpam\AntiSpamControl::register($container);
 ```
 
 ## Použití
-Registrované rozšíření formulář lze pak použít následovně:
+Registrované rozšíření formuláře lze pak použít následovně:
 ```php
 protected function createComponentForm() {
   $form = new \Nette\Application\UI\Form
@@ -30,6 +30,8 @@ protected function createComponentForm() {
 ```
 Funkce addAntiSpam příjímá jako první parametr název prvku, druhým parametrem je prodleva ve vteřinách, kdy bude moci uživatel 
 znova formulář odeslat a třetím parametrem je minimální doba pro čtení stránky ve vteřinách, kdy se formulář nesmí odeslat.
+
+Jediným povinným parametrem je název prvku.
 
 ### Ověření formuláře
 Formulář lze ověřit dle hodnoty, kterou prvek vrátí:
