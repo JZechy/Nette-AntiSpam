@@ -8,7 +8,9 @@ Rozšíření nabízí následující řešení pro zabránění spamu:
 * **Prodleva mezi příspěvky** - Lze též nastavit prodlevu, kdy uživatel může odeslat další příspěvěk.
 
 ## Composer
-_As soon as possible_
+```
+composer require jzechy/nette-antispam
+```
 
 ## Instalace
 Do vašeho bootstrap.php souboru stačí přidat následující řádku:
