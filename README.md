@@ -1,5 +1,8 @@
 # Nette-AntiSpam
 
+[![Latest stable](https://img.shields.io/packagist/v/jzechy/nette-antispam.svg?style=flat-square)](https://packagist.org/packages/jzechy/nette-antispam)
+[![Downloads Total](https://img.shields.io/packagist/dt/jzechy/nette-antispam.svg?style=flat-square)](https://packagist.org/packages/jzechy/nette-antispam)
+
 Jedná se o antispamovou sadu prvků, která pomáhá chránit formulář pomocí CSS, JS a PHP před spamem bez obtěžování uživatelů Captchou. 
 Rozšíření nabízí následující řešení pro zabránění spamu:
 * **CSS** - Pole skrytá běžnému uživateli pomocí CSS. Jelikož se typický bot snaží vyplnit celý formulář, pokusí se vyplnit i tyto pole.
