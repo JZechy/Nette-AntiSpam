@@ -44,7 +44,7 @@ class AntiSpamControl extends \Nette\Forms\Controls\BaseControl {
 	private $request;
 
 	/**
-	 * @var SpamSession
+	 * @var \Nette\Http\SessionSection
 	 */
 	private $session;
 
@@ -77,7 +77,7 @@ class AntiSpamControl extends \Nette\Forms\Controls\BaseControl {
 	 * Matematické operace pro vygenerování příkladu.
 	 * @var array
 	 */
-	private $operations = array("+", "-", "*");
+	private $operations = array("+", "-");
 
 	/**
 	 * Slovní vyjádření čísel.
@@ -91,7 +91,7 @@ class AntiSpamControl extends \Nette\Forms\Controls\BaseControl {
 	 * Otázka vyzívacající užitele k výpočtu.
 	 * @var string
 	 */
-	private $question = "Vypočítejte ";
+	private $question = "Vypočítejte";
 
 	/**
 	 * Výsledek početního příkladu.
@@ -105,6 +105,16 @@ class AntiSpamControl extends \Nette\Forms\Controls\BaseControl {
 	private $errorType = 0;
 
 	/**
+	 * @var \Nette\Utils\Html
+	 */
+	private $questionLabelPrototype;
+
+	/**
+	 * @var \Nette\Utils\Html
+	 */
+	private $questionInputPrototype;
+
+	/**
 	 * AntiSpamInput constructor.
 	 * @param string $name Název elementu.
 	 * @param int $blockingTime Kolik vteřin musí uběhnout od doby, než uživatel může znova odeslat formulář.
@@ -116,7 +126,9 @@ class AntiSpamControl extends \Nette\Forms\Controls\BaseControl {
 		$this->name = $name;
 		$this->blockingTime = $blockingTime;
 		$this->minimumReadTime = $minimumReadTime;
-		$this->session = new SpamSession($name);
+
+		$this->questionLabelPrototype = \Nette\Utils\Html::el("label");
+		$this->questionInputPrototype = \Nette\Utils\Html::el("input type='text'");
 	}
 
 	# --------------------------------------------------------------------
@@ -178,10 +190,38 @@ class AntiSpamControl extends \Nette\Forms\Controls\BaseControl {
 	}
 
 	/**
+	 * @return \Nette\Utils\Html
+	 */
+	public function &getQuestionLabelPrototype() {
+		return $this->questionLabelPrototype;
+	}
+
+	/**
+	 * @param \Nette\Utils\Html $questionLabelPrototype
+	 */
+	public function setQuestionLabelPrototype($questionLabelPrototype) {
+		$this->questionLabelPrototype = $questionLabelPrototype;
+	}
+
+	/**
+	 * @return \Nette\Utils\Html
+	 */
+	public function &getQuestionInputPrototype() {
+		return $this->questionInputPrototype;
+	}
+
+	/**
+	 * @param \Nette\Utils\Html $questionInputPrototype
+	 */
+	public function setQuestionInputPrototype($questionInputPrototype) {
+		$this->questionInputPrototype = $questionInputPrototype;
+	}
+
+	/**
 	 * Nastaví session omezení.
 	 */
 	private function setLimitations() {
-		$this->session->write("minimumReadTime", strtotime("+ " . $this->minimumReadTime . " seconds"));
+		$this->getSession()->minimumReadTime = strtotime("+ " . $this->minimumReadTime . " seconds");
 	}
 
 	/**
@@ -203,6 +243,19 @@ class AntiSpamControl extends \Nette\Forms\Controls\BaseControl {
 		return $this->request;
 	}
 
+	/**
+	 * @return \Nette\Http\SessionSection
+	 */
+	private function getSession() {
+		if(is_null($this->session)) {
+			/** @var \Nette\Http\Session $session */
+			$session = $this->container->getByType("\Nette\Http\Session");
+			$this->session = $session->getSection($this->name);
+		}
+
+		return $this->session;
+	}
+
 	# --------------------------------------------------------------------
 	# Input generator
 	# --------------------------------------------------------------------
@@ -218,7 +271,7 @@ class AntiSpamControl extends \Nette\Forms\Controls\BaseControl {
 		$this->generateHiddenInputs($divGroup);
 		$this->generateJavaScriptQuestion($divGroup);
 
-		$this->session->dumpSession();
+		\Tracy\Debugger::barDump($this->getSession());
 
 		return $divGroup;
 	}
@@ -255,14 +308,16 @@ class AntiSpamControl extends \Nette\Forms\Controls\BaseControl {
 		$javaScriptGroup = \Nette\Utils\Html::el("div id='$groupId'");
 		$javaScriptGroup->class[] = $this->getHtmlName() . "-question-group";
 
-		$label = \Nette\Utils\Html::el("label");
-		$label->setText($this->generateMathQuestion());
+		$this->questionLabelPrototype->setText($this->generateMathQuestion());
 
 		$inputName = $this->getHtmlName() . "-question-result";
 		$inputId = $this->getHtmlId() . "-question-result";
-		$input = \Nette\Utils\Html::el("input type='text' name='$inputName' id='$inputId'");
-		$javaScriptGroup->add($label);
-		$javaScriptGroup->add($input);
+		$this->questionInputPrototype->addAttributes(array(
+			"id" => $inputId,
+			"name" => $inputName
+		));
+		$javaScriptGroup->add($this->questionLabelPrototype);
+		$javaScriptGroup->add($this->questionInputPrototype);
 
 		$script = \Nette\Utils\Html::el("script");
 		$script->setHtml("
@@ -296,15 +351,12 @@ class AntiSpamControl extends \Nette\Forms\Controls\BaseControl {
 				}
 				$this->result = $numberA - $numberB;
 				break;
-			case "*":
-				$this->result = $numberA * $numberB;
-				break;
 		}
 		$numberA = $this->stringifyNumber($numberA);
 		$numberB = $this->stringifyNumber($numberB);
-		$this->session->write("result", $this->result);
+		$this->getSession()->result = $this->result;
 
-		return "Vypočítejte $numberA $operation $numberB";
+		return $this->question . " $numberA $operation $numberB";
 	}
 
 	/**
@@ -355,7 +407,7 @@ class AntiSpamControl extends \Nette\Forms\Controls\BaseControl {
 	 * @return bool
 	 */
 	private function checkReadTime() {
-		if($this->session->read("minimumReadTime") > time()) {
+		if($this->getSession()->minimumReadTime > time()) {
 			$this->errorType = ErrorType::MINIMUM_READ_TIME;
 		}
 	}
@@ -365,7 +417,7 @@ class AntiSpamControl extends \Nette\Forms\Controls\BaseControl {
 	 * @return bool
 	 */
 	private function checkMathResult() {
-		$result = $this->session->read("result");
+		$result = $this->getSession()->result;
 		$enteredValue = $this->getRequest()->getPost($this->getHtmlName() . "-question-result");
 
 		if($result != $enteredValue) {
@@ -389,10 +441,10 @@ class AntiSpamControl extends \Nette\Forms\Controls\BaseControl {
 	 * @return bool
 	 */
 	private function checkBlockingTime() {
-		$blockingTime = $this->session->read("blockingTime");
+		$blockingTime = $this->getSession()->blockingTime;
 		if(is_null($blockingTime)) {
 			if($this->errorType == 0) {
-				$this->session->write("blockingTime", strtotime("+ " . $this->blockingTime . " seconds"));
+				$this->getSession()->blockingTime = strtotime("+ " . $this->blockingTime . " seconds");
 			}
 		} else {
 			if($blockingTime > time()) {
@@ -448,6 +500,7 @@ class AntiSpamControl extends \Nette\Forms\Controls\BaseControl {
 	public function setRequired($value = TRUE) {
 		throw new \Nette\NotSupportedException("Funkce setRequired() není podporována.");
 	}
+
 }
 
 /**
