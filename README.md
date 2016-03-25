@@ -22,7 +22,7 @@ Zet\AntiSpam\AntiSpamControl::register($container);
 Registrované rozšíření formuláře lze pak použít následovně:
 ```php
 protected function createComponentForm() {
-  $form = new \Nette\Application\UI\Form
+  $form = new \Nette\Application\UI\Form();
 
   // Vlastní prvky formuláře ...
   $form->addAntiSpam("spamControl", 120, 60);
