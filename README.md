@@ -47,6 +47,8 @@ které lze testovat proti konstantám ze třídy **Zet\AntiSpam\ErrorType**.
 ## Konfigurace
 ### Settery
 ```php
+$antiSpamControl->getQuestionLabelPrototype(); // Vrátí Nette\Utils\Html s definicí labelu pro kontrolní otázku
+$antiSpamControl->getQuestionInputPrototype(); // Vrátí Nette\Utils\Html s definicí inputu pro kontrolní otázku.
 $antiSpamControl->setHiddenClass("className"); // Vlastní třída pro schování skrytých inputů. Defaultně se vytváří atribut style.
 $antiSpamControl->setBlockingTime(5); // Doba, která musí uplynout před dalším odesláním formuláře uživatelem.
 $antiSpamControl->setMinimumReadTime(60); // Doba, po kterou nelze odeslat formulář po načtení stránky - bude brán jako odeslán botem.
