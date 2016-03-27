@@ -2,6 +2,7 @@
 
 [![Latest stable](https://img.shields.io/packagist/v/jzechy/nette-antispam.svg?style=flat-square)](https://packagist.org/packages/jzechy/nette-antispam)
 [![Downloads Total](https://img.shields.io/packagist/dt/jzechy/nette-antispam.svg?style=flat-square)](https://packagist.org/packages/jzechy/nette-antispam)
+[![Open Issues](https://img.shields.io/github/issues/jzechy/nette-antispam.svg?style=flat-square)](https://github.com/JZechy/Nette-AntiSpam/issues)
 
 Jedná se o antispamovou sadu prvků, která pomáhá chránit formulář pomocí CSS, JS a PHP před spamem bez obtěžování uživatelů Captchou. 
 Rozšíření nabízí následující řešení pro zabránění spamu:
