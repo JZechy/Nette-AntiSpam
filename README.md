@@ -6,16 +6,16 @@
 
 Nette-AntiSpam slouží jako rozšíření nette formuláře o sadu antispamových prvků a mechanismů, které tiše a neviditelně ochraňují formulář před spamem. Rozšíření používá celkem čtyři metody pro zabránění nežádoucího odeslání formuláře:
 
-## Skrytá pole
+### Skrytá pole
 Vygenerována jsou dvě pole do formuláře navíc, která jsou ovšem běžnému uživateli skryta pomocí CSS. Jelikož se běžný spambot pokusí vyplnit celý formulář, měl by vyplnit i tato pole.
 
-## Kontrolní otázka
+### Kontrolní otázka
 Náhodně vygerovaná a jednoduchá početní úloha. Odpovědní formulář je ovšem automaticky vyplněn JavaScriptem a uživateli skryt. Pokud v uživatelově prohlížeči chybí podpora JS nebo jej má vypnutý, bude požádán o vyplnění.
 
-## Minimální doba čtení příspěvku
+### Minimální doba čtení příspěvku
 Tato metoda předpokládá, že spambot odesílá formulář téměř okamžitě. Lze si tedy nastavit minimální prodlevu ve vteřinách, během které předpokládáme, že uživatel bude příspěvek číst nebo psát odpověď.
 
-## Prodleva mezi příspěvky
+### Prodleva mezi příspěvky
 Tato prodleva určuje, za jak dlouho může uživatel znova odeslat příspěvěk.
 
 ## Composer
