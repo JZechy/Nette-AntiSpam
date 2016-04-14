@@ -4,12 +4,19 @@
 [![Downloads Total](https://img.shields.io/packagist/dt/jzechy/nette-antispam.svg?style=flat-square)](https://packagist.org/packages/jzechy/nette-antispam)
 [![Open Issues](https://img.shields.io/github/issues/jzechy/nette-antispam.svg?style=flat-square)](https://github.com/JZechy/Nette-AntiSpam/issues)
 
-Jedná se o antispamovou sadu prvků, která pomáhá chránit formulář pomocí CSS, JS a PHP před spamem bez obtěžování uživatelů Captchou. 
-Rozšíření nabízí následující řešení pro zabránění spamu:
-* **CSS** - Pole skrytá běžnému uživateli pomocí CSS. Jelikož se typický bot snaží vyplnit celý formulář, pokusí se vyplnit i tyto pole.
-* **JS kontrolní otázka** - Náhodně vygenerovaná otázka s jednoduchou početní úlohou. Tato otázka se vyplní javascriptem a následně uživateli skryje. Pokud má uživatel JS vypnutý, bude vyzván k vyplnění tohoto pole.
-* **Minimální čas čtení příspěvku** - Lze si nastavit minimální dobu, pro kterou je předpokládáno, že uživatel bude číst příspěvěk po načtení stránky. Pokud bude formulář odeslán před uplynutím této doby, bude vyhodnocen jako odeslaný robotem.
-* **Prodleva mezi příspěvky** - Lze též nastavit prodlevu, kdy uživatel může odeslat další příspěvěk.
+Nette-AntiSpam slouží jako rozšíření nette formuláře o sadu antispamových prvků a mechanismů, které tiše a neviditelně ochraňují formulář před spamem. Rozšíření používá celkem čtyři metody pro zabránění nežádoucího odeslání formuláře:
+
+## Skrytá pole
+Vygenerována jsou dvě pole do formuláře navíc, která jsou ovšem běžnému uživateli skryta pomocí CSS. Jelikož se běžný spambot pokusí vyplnit celý formulář, měl by vyplnit i tato pole.
+
+## Kontrolní otázka
+Náhodně vygerovaná a jednoduchá početní úloha. Odpovědní formulář je ovšem automaticky vyplněn JavaScriptem a uživateli skryt. Pokud v uživatelově prohlížeči chybí podpora JS nebo jej má vypnutý, bude požádán o vyplnění.
+
+## Minimální doba čtení příspěvku
+Tato metoda předpokládá, že spambot odesílá formulář téměř okamžitě. Lze si tedy nastavit minimální prodlevu ve vteřinách, během které předpokládáme, že uživatel bude příspěvek číst nebo psát odpověď.
+
+## Prodleva mezi příspěvky
+Tato prodleva určuje, za jak dlouho může uživatel znova odeslat příspěvěk.
 
 ## Composer
 ```
