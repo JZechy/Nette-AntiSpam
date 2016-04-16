@@ -1,8 +1,8 @@
 # Nette-AntiSpam
 
-[![Latest stable](https://img.shields.io/packagist/v/jzechy/jquery-fileupload.svg?style=flat-square)](https://packagist.org/packages/jzechy/jquery-fileupload)
-[![Downloads Total](https://img.shields.io/packagist/dt/jzechy/jquery-fileupload.svg?style=flat-square)](https://packagist.org/packages/jzechy/jquery-fileupload)
-[![Open Issues](https://img.shields.io/github/issues/jzechy/jquery-fileupload.svg?style=flat-square)](https://github.com/JZechy/jquery-fileupload/issues)
+[![Latest stable](https://img.shields.io/packagist/v/jzechy/nette-antispam.svg?style=flat-square)](https://packagist.org/packages/jzechy/nette-antispam)
+[![Downloads Total](https://img.shields.io/packagist/dt/jzechy/nette-antispam.svg?style=flat-square)](https://packagist.org/packages/jzechy/nette-antispam)
+[![Open Issues](https://img.shields.io/github/issues/jzechy/nette-antispam.svg?style=flat-square)](https://github.com/JZechy/Nette-AntiSpam/issues)
 
 Nette-AntiSpam slouží jako rozšíření nette formuláře o sadu antispamových prvků a mechanismů, které tiše a neviditelně ochraňují formulář před spamem. Rozšíření používá celkem čtyři metody pro zabránění nežádoucího odeslání formuláře:
 
