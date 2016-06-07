@@ -77,15 +77,15 @@ class AntiSpamControl extends \Nette\Forms\Controls\BaseControl {
 	 * Matematické operace pro vygenerování příkladu.
 	 * @var array
 	 */
-	private $operations = array("+", "-");
+	private $operations = ["+", "-"];
 
 	/**
 	 * Slovní vyjádření čísel.
 	 * @var array
 	 */
-	private $numberStrings = array(
+	private $numberStrings = [
 		"Nula", "Jedna", "Dva", "Tři", "Čtyři", "Pět", "Šest", "Sedm", "Osm", "Devět"
-	);
+	];
 
 	/**
 	 * Otázka vyzívacající užitele k výpočtu.
@@ -98,6 +98,11 @@ class AntiSpamControl extends \Nette\Forms\Controls\BaseControl {
 	 * @var int
 	 */
 	private $result = 0;
+
+	/**
+	 * @var bool
+	 */
+	private $hasError = FALSE;
 
 	/**
 	 * @var int
@@ -283,9 +288,9 @@ class AntiSpamControl extends \Nette\Forms\Controls\BaseControl {
 	private function generateHiddenInputs(\Nette\Utils\Html &$group) {
 		$hiddenGroup = \Nette\Utils\Html::el("div");
 		if(is_null($this->hiddenClass)) {
-			$hiddenGroup->addAttributes(array(
+			$hiddenGroup->addAttributes([
 				"style" => "display:none"
-			));
+			]);
 		} else {
 			$hiddenGroup->class[] = $this->hiddenClass;
 		}
@@ -312,10 +317,10 @@ class AntiSpamControl extends \Nette\Forms\Controls\BaseControl {
 
 		$inputName = $this->getHtmlName() . "-question-result";
 		$inputId = $this->getHtmlId() . "-question-result";
-		$this->questionInputPrototype->addAttributes(array(
+		$this->questionInputPrototype->addAttributes([
 			"id" => $inputId,
 			"name" => $inputName
-		));
+		]);
 		$javaScriptGroup->add($this->questionLabelPrototype);
 		$javaScriptGroup->add($this->questionInputPrototype);
 
@@ -397,6 +402,13 @@ class AntiSpamControl extends \Nette\Forms\Controls\BaseControl {
 	}
 
 	/**
+	 * @return bool
+	 */
+	public function hasError() {
+		return $this->hasError;
+	}
+
+	/**
 	 * @return int
 	 */
 	public function getErrorType() {
@@ -409,6 +421,7 @@ class AntiSpamControl extends \Nette\Forms\Controls\BaseControl {
 	private function checkReadTime() {
 		if($this->getSession()->minimumReadTime > time()) {
 			$this->errorType = ErrorType::MINIMUM_READ_TIME;
+			$this->hasError = true;
 		}
 	}
 
@@ -422,6 +435,7 @@ class AntiSpamControl extends \Nette\Forms\Controls\BaseControl {
 
 		if($result != $enteredValue) {
 			$this->errorType = ErrorType::WRONG_RESULT;
+			$this->hasError = true;
 		}
 	}
 
@@ -434,6 +448,7 @@ class AntiSpamControl extends \Nette\Forms\Controls\BaseControl {
 
 		if(!empty($text) || is_array($checkbox)) {
 			$this->errorType = ErrorType::FILLED_HIDDEN_FIELDS;
+			$this->hasError = true;
 		}
 	}
 
@@ -449,6 +464,7 @@ class AntiSpamControl extends \Nette\Forms\Controls\BaseControl {
 		} else {
 			if($blockingTime > time()) {
 				$this->errorType = ErrorType::BLOCKING_TIME;
+				$this->hasError = true;
 			}
 		}
 	}
