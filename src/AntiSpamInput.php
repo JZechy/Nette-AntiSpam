@@ -403,7 +403,7 @@ class AntiSpamControl extends \Nette\Forms\Controls\BaseControl {
 	 * @return bool
 	 */
 	public function hasError() {
-		return !$this->passed;
+		return !$this->passed;  
 	}
 
 	/**
