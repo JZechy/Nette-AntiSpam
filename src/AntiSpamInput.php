@@ -102,7 +102,7 @@ class AntiSpamControl extends \Nette\Forms\Controls\BaseControl {
 	/**
 	 * @var bool
 	 */
-	private $hasError = FALSE;
+	private $passed = TRUE;
 
 	/**
 	 * @var int
@@ -396,14 +396,14 @@ class AntiSpamControl extends \Nette\Forms\Controls\BaseControl {
 		$this->checkHiddenFields();
 		$this->checkMathResult();
 
-		return $this->errorType;
+		return $this->passed;
 	}
 
 	/**
 	 * @return bool
 	 */
 	public function hasError() {
-		return $this->hasError;
+		return !$this->passed;
 	}
 
 	/**
@@ -419,7 +419,7 @@ class AntiSpamControl extends \Nette\Forms\Controls\BaseControl {
 	private function checkReadTime() {
 		if($this->getSession()->minimumReadTime > time()) {
 			$this->errorType = ErrorType::MINIMUM_READ_TIME;
-			$this->hasError = true;
+			$this->passed = false;
 		}
 	}
 
@@ -433,7 +433,7 @@ class AntiSpamControl extends \Nette\Forms\Controls\BaseControl {
 
 		if($result != $enteredValue) {
 			$this->errorType = ErrorType::WRONG_RESULT;
-			$this->hasError = true;
+			$this->passed = false;
 		}
 	}
 
@@ -446,7 +446,7 @@ class AntiSpamControl extends \Nette\Forms\Controls\BaseControl {
 
 		if(!empty($text) || is_array($checkbox)) {
 			$this->errorType = ErrorType::FILLED_HIDDEN_FIELDS;
-			$this->hasError = true;
+			$this->passed = false;
 		}
 	}
 
@@ -462,7 +462,7 @@ class AntiSpamControl extends \Nette\Forms\Controls\BaseControl {
 		} else {
 			if($blockingTime > time()) {
 				$this->errorType = ErrorType::BLOCKING_TIME;
-				$this->hasError = true;
+				$this->passed = false;
 			}
 		}
 	}
