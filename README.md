@@ -45,15 +45,13 @@ znova formulář odeslat a třetím parametrem je minimální doba pro čtení s
 Jediným povinným parametrem je název prvku.
 
 ### Ověření formuláře
-Formulář lze ověřit dle hodnoty, kterou prvek vrátí:
+Formulář lze ověřit dle hodnoty, kterou prvek vrátí - Navrací true, pokud odesílatel antispamem prošel nebo false v opačném případě:
 ```php
 $values = $form->getValues();
-if($values->spamControl == 0) {
+if($values->spamControl) {
   // Všechny podmínky pro odeslání formuláře byli splněny.
 }
 ```
-Pokud budou splněny všechny podmínky pro odeslání formuláře, bude navrácena **0**. Jinak se vrací číselné označení chyby,
-které lze testovat proti konstantám ze třídy **Zet\AntiSpam\ErrorType**.
 
 ## Konfigurace
 ### Settery
@@ -68,6 +66,13 @@ $antiSpamControl->setNumberString(array(
 )); // Pole s čísly vyjádřenými jako řetězci. Čísla pro kontrolní otázku se náhodně převádí do řetězců.
 $antiSpamControl->setQuestion("Vypočítejte "); // Vlastní začátek kontrolní otázky.
 ```
+
+### Gettery
+```php
+$antiSpamControl->hasError(); // Neprošel formulář validací?
+$antiSpamControl->getErrorType(); // Kod chyby.
+```
+Pokud budou splněny všechny podmínky pro odeslání formuláře, bude funkci getErrorType() navrácena **0**. Jinak se vrací číselné označení chyby, které lze testovat proti konstantám ze třídy **Zet\AntiSpam\ErrorType**.
 
 ### ErrorType Konstanty
 ```php
