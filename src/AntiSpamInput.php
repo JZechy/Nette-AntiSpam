@@ -276,8 +276,6 @@ class AntiSpamControl extends \Nette\Forms\Controls\BaseControl {
 		$this->generateHiddenInputs($divGroup);
 		$this->generateJavaScriptQuestion($divGroup);
 
-		\Tracy\Debugger::barDump($this->getSession());
-
 		return $divGroup;
 	}
 
