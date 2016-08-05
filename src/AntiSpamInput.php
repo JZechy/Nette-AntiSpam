@@ -294,12 +294,12 @@ class AntiSpamControl extends \Nette\Forms\Controls\BaseControl {
 		}
 
 		$textInput = \Nette\Utils\Html::el("input type='text' name='" . $this->getHtmlName() . "-name'");
-		$hiddenGroup->add($textInput);
+		$hiddenGroup->addHtml($textInput);
 
 		$checkBox = \Nette\Utils\Html::el("input type='checkbox' name='" . $this->getHtmlName() . "-terms'");
-		$hiddenGroup->add($checkBox);
+		$hiddenGroup->addHtml($checkBox);
 
-		$group->add($hiddenGroup);
+		$group->addHtml($hiddenGroup);
 	}
 
 	/**
@@ -319,17 +319,17 @@ class AntiSpamControl extends \Nette\Forms\Controls\BaseControl {
 			"id" => $inputId,
 			"name" => $inputName
 		]);
-		$javaScriptGroup->add($this->questionLabelPrototype);
-		$javaScriptGroup->add($this->questionInputPrototype);
+		$javaScriptGroup->addHtml($this->questionLabelPrototype);
+		$javaScriptGroup->addHtml($this->questionInputPrototype);
 
 		$script = \Nette\Utils\Html::el("script");
 		$script->setHtml("
 			document.getElementById('$inputId').value = " . $this->result . ";
 			document.getElementById('$groupId').style.display = 'none';
 		");
-		$javaScriptGroup->add($script);
+		$javaScriptGroup->addHtml($script);
 
-		$group->add($javaScriptGroup);
+		$group->addHtml($javaScriptGroup);
 	}
 
 	/**
@@ -403,7 +403,7 @@ class AntiSpamControl extends \Nette\Forms\Controls\BaseControl {
 	 * @return bool
 	 */
 	public function hasError() {
-		return !$this->passed;  
+		return !$this->passed;
 	}
 
 	/**
