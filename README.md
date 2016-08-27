@@ -1,6 +1,7 @@
 # Nette-AntiSpam
 
 [![Latest stable](https://img.shields.io/packagist/v/jzechy/nette-antispam.svg?style=flat-square)](https://packagist.org/packages/jzechy/nette-antispam)
+[![license](https://img.shields.io/github/license/jzechy/nette-antispam.svg?maxAge=2592000&style=flat-square)](https://github.com/JZechy/Nette-AntiSpam/blob/master/LICENSE)
 [![Downloads Total](https://img.shields.io/packagist/dt/jzechy/nette-antispam.svg?style=flat-square)](https://packagist.org/packages/jzechy/nette-antispam)
 [![Open Issues](https://img.shields.io/github/issues/jzechy/nette-antispam.svg?style=flat-square)](https://github.com/JZechy/Nette-AntiSpam/issues)
 
