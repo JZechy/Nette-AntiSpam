@@ -5,12 +5,12 @@ namespace Zet\AntiSpam;
 use Nette\Utils\Html;
 
 /**
- * Class Question
+ * Class QuestionGenerator
  *
  * @author  Zechy <email@zechy.cz>
  * @package Zet\AntiSpam
  */
-class Question {
+class QuestionGenerator {
 	
 	/**
 	 * @var string
@@ -40,18 +40,41 @@ class Question {
 	];
 	
 	/**
-	 * Question constructor.
+	 * @var Html
+	 */
+	private $labelPrototype;
+	
+	/**
+	 * @var Html
+	 */
+	private $inputPrototype;
+	
+	/**
+	 * @var int
+	 */
+	private $result;
+	
+	/**
+	 * QuestionGenerator constructor.
 	 *
-	 * @param string $htmlId
-	 * @param string $htmlName
-	 * @param array  $numbers
-	 * @param string $question
+	 * @param string    $htmlId
+	 * @param string    $htmlName
+	 * @param array     $numbers
+	 * @param string    $question
 	 */
 	public function __construct($htmlId, $htmlName, array $numbers, $question) {
 		$this->htmlName = $htmlName;
 		$this->numbers = $numbers;
 		$this->question = $question;
 		$this->htmlId = $htmlId;
+		
+		$this->labelPrototype = Html::el(
+			sprintf("label for='%s' style='display:block'", $this->getQuestionName())
+		);
+		
+		$this->inputPrototype = Html::el(
+			sprintf("input type='text' name='%s' id='%s'", $this->getQuestionName(), $this->getQuestionId())
+		);
 	}
 	
 	/**
@@ -76,6 +99,13 @@ class Question {
 	}
 	
 	/**
+	 * @return int
+	 */
+	public function getResult() {
+		return $this->result;
+	}
+	
+	/**
 	 * @return Html
 	 */
 	public function getQuestion() {
@@ -83,18 +113,16 @@ class Question {
 		$container = Html::el("div");
 		$container->setAttribute("id", $containerId);
 		
-		$questionName = $this->getQuestionName();
 		$questionId = $this->getQuestionId();
+		
 		$first = $this->getRandomNumber();
 		$operation = $this->operation[ rand(0, 1) ];
 		$second = $this->getRandomNumber();
-		$result = $this->evalOperation($first, $operation, $second);
+		$this->result = $result = $this->evalOperation($first, $operation, $second);
+		$this->labelPrototype->setText($this->createQuestion($first, $operation, $second));
 		
-		$label = Html::el("label for='$questionName' style='display:block'");
-		$label->setText($this->createQuestion($first, $operation, $second));
-		$container->addHtml($label);
-		$input = Html::el("input type='text' name='$questionName' id='$questionId'");
-		$container->addHtml($input);
+		$container->addHtml($this->labelPrototype);
+		$container->addHtml($this->inputPrototype);
 		
 		$script = Html::el("script");
 		$script->setHtml(
@@ -102,7 +130,6 @@ class Question {
 			"document.getElementById('$questionId').value = $result;"
 		);
 		$container->addHtml($script);
-		
 		
 		return $container;
 	}
@@ -156,5 +183,33 @@ class Question {
 	 */
 	private function stringify($number) {
 		return rand(0, 1) ? $this->numbers[ $number ] : $number;
+	}
+	
+	/**
+	 * @return Html
+	 */
+	public function getLabelPrototype() {
+		return $this->labelPrototype;
+	}
+	
+	/**
+	 * @param Html $labelPrototype
+	 */
+	public function setLabelPrototype($labelPrototype) {
+		$this->labelPrototype = $labelPrototype;
+	}
+	
+	/**
+	 * @return Html
+	 */
+	public function getInputPrototype() {
+		return $this->inputPrototype;
+	}
+	
+	/**
+	 * @param Html $inputPrototype
+	 */
+	public function setInputPrototype($inputPrototype) {
+		$this->inputPrototype = $inputPrototype;
 	}
 }

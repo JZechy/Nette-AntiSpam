@@ -4,6 +4,10 @@ namespace Zet\AntiSpam;
 
 use Nette\Forms\Container;
 use Nette\Forms\Controls\BaseControl;
+use Nette\Http\Request;
+use Nette\Http\Session;
+use Nette\Utils\Html;
+use Tracy\Debugger;
 
 /**
  * Class AntiSpamControl
@@ -17,15 +21,21 @@ class AntiSpamControl extends BaseControl {
 	# Registration
 	# --------------------------------------------------------------------
 	/**
-	 * @param array $configuration
+	 * @param array   $configuration
+	 * @param Session $session
+	 * @param Request $request
 	 */
-	public static function register(array $configuration) {
+	public static function register(array $configuration, Session $session, Request $request) {
 		$class = __CLASS__;
 		
 		Container::extensionMethod("addAntiSpam", function(
-			Container $container, $name, $lockTime = 5, $resendTime = 60
-		) use ($class, $configuration) {
-			$control = new $class($configuration, $name, $lockTime, $resendTime);
+			Container $container, $name, $lockTime = null, $resendTime = null
+		) use ($class, $configuration, $session, $request) {
+			/** @var AntiSpamControl $control */
+			$control = new $class($configuration, $session, $request, $name);
+			if($lockTime !== null) $control->setLockTime($lockTime);
+			if($resendTime !== null) $control->setResendTime($resendTime);
+			
 			$container->addComponent($control, $name);
 			
 			return $control;
@@ -51,24 +61,28 @@ class AntiSpamControl extends BaseControl {
 	private $hiddenFields;
 	
 	/**
-	 * @var Question
+	 * @var QuestionGenerator
 	 */
 	private $question;
 	
 	/**
+	 * @var Validator
+	 */
+	private $validator;
+	
+	/**
 	 * AntiSpamControl constructor.
 	 *
-	 * @param array  $configuration
-	 * @param string $name
-	 * @param int    $lockTime
-	 * @param int    $resendTime
+	 * @param array   $configuration
+	 * @param Session $session
+	 * @param Request $request
+	 * @param string  $name
 	 */
-	public function __construct(array $configuration, $name, $lockTime, $resendTime) {
+	public function __construct(array $configuration, Session $session, Request $request, $name) {
 		parent::__construct($name);
 		
 		$this->configuration = $configuration;
-		$this->configuration["lockTime"] = $lockTime;
-		$this->configuration["resendTime"] = $resendTime;
+		$this->validator = new Validator($session, $request);
 	}
 	
 	/**
@@ -78,9 +92,10 @@ class AntiSpamControl extends BaseControl {
 		parent::attached($form);
 		
 		$this->hiddenFields = new HiddenFields($this->getHtmlId(), $this->getHtmlName());
-		$this->question = new Question(
+		$this->question = new QuestionGenerator(
 			$this->getHtmlId(), $this->getHtmlName(), $this->configuration["numbers"], $this->configuration["question"]
 		);
+		$this->validator->setHtmlName($this->getHtmlName());
 	}
 	
 	/**
@@ -124,6 +139,20 @@ class AntiSpamControl extends BaseControl {
 	}
 	
 	/**
+	 * @return HiddenFields
+	 */
+	public function getHiddenFields() {
+		return $this->hiddenFields;
+	}
+	
+	/**
+	 * @return QuestionGenerator
+	 */
+	public function getQuestionGenerator() {
+		return $this->question;
+	}
+	
+	/**
 	 * @return Html
 	 */
 	public function getControl() {
@@ -131,6 +160,11 @@ class AntiSpamControl extends BaseControl {
 		$element->setName("div");
 		$element->addHtml($this->hiddenFields->getControls());
 		$element->addHtml($this->question->getQuestion());
+		
+		$this->validator->setQuestionResult($this->question->getResult());
+		$this->validator->setLockTime($this->configuration["lockTime"]);
+		
+		$this->validator->barDumpSession();
 		
 		return $element;
 	}
@@ -141,5 +175,26 @@ class AntiSpamControl extends BaseControl {
 	 */
 	public function getLabel($caption = null) {
 		return "";
+	}
+	
+	/**
+	 * @return mixed
+	 */
+	public function getValue() {
+		$this->validator->setFormMethod($this->form->getMethod());
+		$this->validator->setHiddenInputs($this->hiddenFields->getInputs());
+		$this->validator->setQuestionInput($this->question->getQuestionName());
+		
+		$validation = $this->validator->validateForm();
+		$this->validator->setResendTime($this->configuration["resendTime"]);
+		
+		return $validation;
+	}
+	
+	/**
+	 * @return int
+	 */
+	public function getError() {
+		return $this->validator->getError();
 	}
 }

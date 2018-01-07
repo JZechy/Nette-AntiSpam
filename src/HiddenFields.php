@@ -32,10 +32,15 @@ class HiddenFields {
 	private $htmlName;
 	
 	/**
+	 * @var string
+	 */
+	private $hideClass;
+	
+	/**
 	 * HiddenFields constructor.
 	 *
-	 * @param string $htmlId
-	 * @param string $htmlName
+	 * @param string    $htmlId
+	 * @param string    $htmlName
 	 */
 	public function __construct($htmlId, $htmlName) {
 		$this->htmlId = $htmlId;
@@ -64,11 +69,29 @@ class HiddenFields {
 			$group->addHtml($el);
 		}
 		
-		$script = Html::el("script");
-		$script->setHtml("document.getElementById('$groupId').style.display = 'none';");
-		$group->addHtml($script);
+		if($this->hideClass === null) {
+			$script = Html::el("script");
+			$script->setHtml("document.getElementById('$groupId').style.display = 'none';");
+			$group->addHtml($script);
+		} else {
+			$group->appendAttribute("class", $this->hideClass);
+		}
+		
 		
 		return $group;
 	}
 	
+	/**
+	 * @param string $class
+	 */
+	public function hideByClass($class) {
+		$this->hideClass = $class;
+	}
+	
+	/**
+	 * @return array
+	 */
+	public function getInputs() {
+		return $this->inputs;
+	}
 }

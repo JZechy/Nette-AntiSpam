@@ -43,8 +43,10 @@ final class AntiSpamExtension extends CompilerExtension {
 	public function afterCompile(Nette\PhpGenerator\ClassType $class) {
 		$init = $class->methods["initialize"];
 		
-		$init->addBody('\Zet\AntiSpam\AntiSpamControl::register(?);', [
-			$this->configuration
+		$init->addBody('\Zet\AntiSpam\AntiSpamControl::register(?, $this->getService(?), $this->getService(?));', [
+			$this->configuration,
+			$this->getContainerBuilder()->getByType(Nette\Http\Session::class),
+			$this->getContainerBuilder()->getByType(Nette\Http\Request::class)
 		]);
 	}
 }
