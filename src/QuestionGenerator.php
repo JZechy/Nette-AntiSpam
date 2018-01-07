@@ -73,7 +73,7 @@ class QuestionGenerator {
 		);
 		
 		$this->inputPrototype = Html::el(
-			sprintf("input type='text' name='%s' id='%s'", $this->getQuestionName(), $this->getQuestionId())
+			sprintf("input type='text' name='%s' id='%s' required", $this->getQuestionName(), $this->getQuestionId())
 		);
 	}
 	
