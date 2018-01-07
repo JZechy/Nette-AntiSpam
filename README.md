@@ -5,16 +5,23 @@
 [![Downloads Total](https://img.shields.io/packagist/dt/jzechy/nette-antispam.svg?style=flat-square)](https://packagist.org/packages/jzechy/nette-antispam)
 [![Open Issues](https://img.shields.io/github/issues/jzechy/nette-antispam.svg?style=flat-square)](https://github.com/JZechy/Nette-AntiSpam/issues)
 
-Nette-AntiSpam slouží jako rozšíření nette formuláře o sadu antispamových prvků a mechanismů, které tiše a neviditelně ochraňují formulář před spamem. Rozšíření používá celkem čtyři metody pro zabránění nežádoucího odeslání formuláře:
+Nette-AntiSpam slouží jako formulářová komponenta, která pomocí čtyř metod ochrání formulář proti náhodnému spamu.
 
 ### Skrytá pole
-Vygenerována jsou dvě pole do formuláře navíc, která jsou ovšem běžnému uživateli skryta pomocí CSS. Jelikož se běžný spambot pokusí vyplnit celý formulář, měl by vyplnit i tato pole.
+Do formuláře jsou vygenerována další pole navíc, která jsou před uživatelem skryta JavaScriptem. Pokud
+bude nějaké z polí vyplněno, bude odesílající identifikován jako spambot.
+
+Skrytí JavaScriptem se dá nahradit vlastní CSS třídou po skrytí pro případ uživatelů bez JavaScriptu. 
+
+### Časový zámek formuláře
+Jelikož spamboti zpravidla odesílají formuláře téměř ihned. Dá se nastavit ve vteřinách doba, pro kterou formulář
+zablokován.
 
 ### Kontrolní otázka
-Náhodně vygerovaná a jednoduchá početní úloha. Odpovědní formulář je ovšem automaticky vyplněn JavaScriptem a uživateli skryt. Pokud v uživatelově prohlížeči chybí podpora JS nebo jej má vypnutý, bude požádán o vyplnění.
+Náhodně vygenerovaná, jednoduchá početní úloha, kdy čísla jsou náhodně převáděna na řetězce. Tato otázka
+je uživateli opět skryta a vyplněna JavaScriptem. Pokud má uživatel JavaScript vypnutý, bude vyzván k vyplnění pole.
 
-### Minimální doba čtení příspěvku
-Tato metoda předpokládá, že spambot odesílá formulář téměř okamžitě. Lze si tedy nastavit minimální prodlevu ve vteřinách, během které předpokládáme, že uživatel bude příspěvek číst nebo psát odpověď.
+Pro tento případ je možné labelu i inputu nastavit vlastní vykreslování.
 
 ### Prodleva mezi příspěvky
 Tato prodleva určuje, za jak dlouho může uživatel znova odeslat příspěvěk.
@@ -25,10 +32,17 @@ composer require jzechy/nette-antispam
 ```
 
 ## Instalace
-Do vašeho bootstrap.php souboru stačí přidat následující řádku:
-```php
-Zet\AntiSpam\AntiSpamControl::register($container);
+Do vašeho config.neon do extensions sekce stačí přidat:
 ```
+antispam: Zet\AntiSpam\AntiSpamExtension
+```
+### Konfigurace
+Komponentu lze nakonfigurovat pomocí následujících nastavení:
+* **lockTime** Časový zámek formuláře, během kterého se nesmí odeslat. Nastavuje se očekávaná prodleva ve vteřinách.
+* **resendTime** Čas, po kterém uživatel může znova odeslat formulář. Nastavuje se očekávání prodleva ve vteřinách Lze vypnout nastavením nuly. 
+* **numbers** Pole čísel pro náhodný převod na řetězec. Čísla jsou řazena od nuly.
+* **question** Znění kontrolní otázky. 
+* **translate** Zapne lokalizaci pro kontrolní otázku. True/false.
 
 ## Použití
 Registrované rozšíření formuláře lze pak použít následovně:
@@ -37,13 +51,12 @@ protected function createComponentForm() {
   $form = new \Nette\Application\UI\Form();
 
   // Vlastní prvky formuláře ...
-  $form->addAntiSpam("spamControl", 120, 60);
+  $form->addAntiSpam("spamControl", 5, 60);
 }
 ```
-Funkce addAntiSpam příjímá jako první parametr název prvku, druhým parametrem je prodleva ve vteřinách, kdy bude moci uživatel 
-znova formulář odeslat a třetím parametrem je minimální doba pro čtení stránky ve vteřinách, kdy se formulář nesmí odeslat.
+Funkce addAntiSpam příjímá jako první parametr název prvku, tento jediný parametr je povinný.
 
-Jediným povinným parametrem je název prvku.
+Dále lze přidat jako druhý parametr zámek formuláře a jako třetí čas, po kterém bude uživatel moci odeslat znova formulář.
 
 ### Ověření formuláře
 Formulář lze ověřit dle hodnoty, kterou prvek vrátí - Navrací true, pokud odesílatel antispamem prošel nebo false v opačném případě:
@@ -57,50 +70,34 @@ if($values->spamControl) {
 ## Konfigurace
 ### Settery
 ```php
-$antiSpamControl->getQuestionLabelPrototype(); // Vrátí Nette\Utils\Html s definicí labelu pro kontrolní otázku
-$antiSpamControl->getQuestionInputPrototype(); // Vrátí Nette\Utils\Html s definicí inputu pro kontrolní otázku.
-$antiSpamControl->setHiddenClass("className"); // Vlastní třída pro schování skrytých inputů. Defaultně se vytváří atribut style.
-$antiSpamControl->setBlockingTime(5); // Doba, která musí uplynout před dalším odesláním formuláře uživatelem.
-$antiSpamControl->setMinimumReadTime(60); // Doba, po kterou nelze odeslat formulář po načtení stránky - bude brán jako odeslán botem.
-$antiSpamControl->setNumberString(array(
-  "Nula", "Jedna", "Dva", "Tři", "Čtyři", "Pět", "Šest", "Sedm", "Osm", "Devět"
-)); // Pole s čísly vyjádřenými jako řetězci. Čísla pro kontrolní otázku se náhodně převádí do řetězců.
-$antiSpamControl->setQuestion("Vypočítejte "); // Vlastní začátek kontrolní otázky.
+$antiSpam->setLockTime(); // Nastaví, kolik vteřin musí uplynout před odesláním formuláře.
+$antiSpam->setResendTime(); // Nastaví, kolik vteřin musí uplynout, než je formulář znova odeslán.
+$antiSpam->setNumbers(); // Pole čísel vyjádřených slovy pro náhodný převod na řetězec.
+$antispam->setQuestion(); // Znění kontrolní otázky.
 ```
 
 ### Gettery
 ```php
-$antiSpamControl->hasError(); // Neprošel formulář validací?
-$antiSpamControl->getErrorType(); // Kod chyby.
+$antispam->getError(); // Kod chyby.
+$antispam->getHiddenFields(); // Vrátí generátor skrytých polí. Užitečné pro přepnutí schování z JS na CSS.
+$antispam->getQuestionGenerator(); // Vrátí generátor kontrolní otázky s prototypy Labelu a inputu.
 ```
-Pokud budou splněny všechny podmínky pro odeslání formuláře, bude funkci getErrorType() navrácena **0**. Jinak se vrací číselné označení chyby, které lze testovat proti konstantám ze třídy **Zet\AntiSpam\ErrorType**.
+Pokud budou splněny všechny podmínky pro odeslání formuláře, bude funkcí getError() navrácena **0**. Jinak se vrací číselné označení chyby, které lze testovat proti konstantám ze třídy **Zet\AntiSpam\ErrorType**.
 
 ### ErrorType Konstanty
 ```php
-class ErrorType extends \Nette\Object {
-
-	/**
-	 * Špatný výsledek otázky.
-	 * @var int
-	 */
-	const WRONG_RESULT = 1;
-
-	/**
-	 * Jsou vyplněná skrytá pole.
-	 * @var int
-	 */
-	const FILLED_HIDDEN_FIELDS = 2;
-
-	/**
-	 * Neuplynula doba, po kterou nemůže uživatel posílat další příspěvěk.
-	 * @var int
-	 */
-	const BLOCKING_TIME = 3;
-
-	/**
-	 * Neuplynula doba od načtení, po které může uživatel odeslat formulář.
-	 * @var int
-	 */
-	const MINIMUM_READ_TIME = 4;
+class ErrorType {
+	
+	use StaticClass;
+	
+	const NO_ERROR = 0;
+	
+	const LOCK_TIME = 1;
+	
+	const RESEND_TIME = 2;
+	
+	const HIDDEN_FIELDS = 3;
+	
+	const QUESTION = 4;
 }
 ```
