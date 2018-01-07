@@ -52,7 +52,8 @@ class AntiSpamControl extends BaseControl {
 		"lockTime" => null,
 		"resendTime" => null,
 		"numbers" => [],
-		"question" => null
+		"question" => null,
+		"translate" => false
 	];
 	
 	/**
@@ -92,8 +93,9 @@ class AntiSpamControl extends BaseControl {
 		parent::attached($form);
 		
 		$this->hiddenFields = new HiddenFields($this->getHtmlId(), $this->getHtmlName());
+		$translator = $this->configuration["translate"] ? $this->getTranslator() : null;
 		$this->question = new QuestionGenerator(
-			$this->getHtmlId(), $this->getHtmlName(), $this->configuration["numbers"], $this->configuration["question"]
+			$this->getHtmlId(), $this->getHtmlName(), $this->configuration["numbers"], $this->configuration["question"], $translator
 		);
 		$this->validator->setHtmlName($this->getHtmlName());
 	}

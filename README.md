@@ -38,10 +38,11 @@ antispam: Zet\AntiSpam\AntiSpamExtension
 ```
 ### Konfigurace
 Komponentu lze nakonfigurovat pomocí následujících nastavení:
-* **lockTime** Časový zámek formuláře, během kterého se nesmí odeslat.
-* **resendTime** Čas, po kterém uživatel může znova odeslat formulář.
+* **lockTime** Časový zámek formuláře, během kterého se nesmí odeslat. Nastavuje se očekávaná prodleva ve vteřinách.
+* **resendTime** Čas, po kterém uživatel může znova odeslat formulář. Nastavuje se očekávání prodleva ve vteřinách Lze vypnout nastavením nuly. 
 * **numbers** Pole čísel pro náhodný převod na řetězec. Čísla jsou řazena od nuly.
-* **question** Znění kontrolní otázky.
+* **question** Znění kontrolní otázky. 
+* **translate** Zapne lokalizaci pro kontrolní otázku. True/false.
 
 ## Použití
 Registrované rozšíření formuláře lze pak použít následovně:

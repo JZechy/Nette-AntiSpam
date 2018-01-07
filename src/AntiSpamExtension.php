@@ -22,7 +22,8 @@ final class AntiSpamExtension extends CompilerExtension {
 		"numbers" => [
 			"nula", "jedna", "dva", "tři", "čtyři", "pět", "šest", "sedm", "osm", "devět"
 		],
-		"question" => "Kolik je"
+		"question" => "Kolik je",
+		"translate" => false
 	];
 	
 	/**

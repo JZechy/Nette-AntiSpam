@@ -2,6 +2,7 @@
 
 namespace Zet\AntiSpam;
 
+use Nette\Localization\ITranslator;
 use Nette\Utils\Html;
 
 /**
@@ -55,14 +56,20 @@ class QuestionGenerator {
 	private $result;
 	
 	/**
+	 * @var ITranslator
+	 */
+	private $translator;
+	
+	/**
 	 * QuestionGenerator constructor.
 	 *
-	 * @param string    $htmlId
-	 * @param string    $htmlName
-	 * @param array     $numbers
-	 * @param string    $question
+	 * @param string      $htmlId
+	 * @param string      $htmlName
+	 * @param array       $numbers
+	 * @param string      $question
+	 * @param ITranslator $translator
 	 */
-	public function __construct($htmlId, $htmlName, array $numbers, $question) {
+	public function __construct($htmlId, $htmlName, array $numbers, $question, ITranslator $translator = null) {
 		$this->htmlName = $htmlName;
 		$this->numbers = $numbers;
 		$this->question = $question;
@@ -75,6 +82,7 @@ class QuestionGenerator {
 		$this->inputPrototype = Html::el(
 			sprintf("input type='text' name='%s' id='%s' required", $this->getQuestionName(), $this->getQuestionId())
 		);
+		$this->translator = $translator;
 	}
 	
 	/**
@@ -174,7 +182,9 @@ class QuestionGenerator {
 		$first = $this->stringify($first);
 		$second = $this->stringify($second);
 		
-		return sprintf("%s %s %s %s?", $this->question, $first, $operation, $second);
+		$question = $this->translator === null ? $this->question : $this->translator->translate($this->question);
+		
+		return sprintf("%s %s %s %s?", $question, $first, $operation, $second);
 	}
 	
 	/**
@@ -182,7 +192,12 @@ class QuestionGenerator {
 	 * @return int|string
 	 */
 	private function stringify($number) {
-		return rand(0, 1) ? $this->numbers[ $number ] : $number;
+		if(rand(0, 1)) {
+			$number = $this->numbers[$number];
+			return $this->translator === null ? $number : $this->translator->translate($number);
+		} else {
+			return $number;
+		}
 	}
 	
 	/**
