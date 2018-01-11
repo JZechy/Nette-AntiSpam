@@ -196,7 +196,7 @@ class Validator {
 	private function validateQuestion() {
 		$value = $this->getData($this->questionInput);
 		
-		return $value == $this->getSessionSection()->result;
+		return $value != $this->getSessionSection()->result;
 	}
 	
 	/**

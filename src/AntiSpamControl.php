@@ -7,7 +7,6 @@ use Nette\Forms\Controls\BaseControl;
 use Nette\Http\Request;
 use Nette\Http\Session;
 use Nette\Utils\Html;
-use Tracy\Debugger;
 
 /**
  * Class AntiSpamControl
@@ -92,12 +91,11 @@ class AntiSpamControl extends BaseControl {
 	protected function attached($form) {
 		parent::attached($form);
 		
-		$this->hiddenFields = new HiddenFields($this->getHtmlId(), $this->getHtmlName());
+		$this->hiddenFields = new HiddenFields();
 		$translator = $this->configuration["translate"] ? $this->getTranslator() : null;
 		$this->question = new QuestionGenerator(
-			$this->getHtmlId(), $this->getHtmlName(), $this->configuration["numbers"], $this->configuration["question"], $translator
+			$this->configuration["numbers"], $this->configuration["question"], $translator
 		);
-		$this->validator->setHtmlName($this->getHtmlName());
 	}
 	
 	/**
@@ -159,14 +157,21 @@ class AntiSpamControl extends BaseControl {
 	 */
 	public function getControl() {
 		$element = parent::getControl();
+		
+		$this->hiddenFields->setHtmlName($this->getHtmlName());
+		$this->hiddenFields->setHtmlId($this->getHtmlId());
+		
+		$this->question->setHtmlName($this->getHtmlName());
+		$this->question->setHtmlId($this->getHtmlId());
+		
+		$this->validator->setHtmlName($this->getHtmlId());
+		
 		$element->setName("div");
 		$element->addHtml($this->hiddenFields->getControls());
 		$element->addHtml($this->question->getQuestion());
 		
 		$this->validator->setQuestionResult($this->question->getResult());
 		$this->validator->setLockTime($this->configuration["lockTime"]);
-		
-		$this->validator->barDumpSession();
 		
 		return $element;
 	}
@@ -183,12 +188,16 @@ class AntiSpamControl extends BaseControl {
 	 * @return mixed
 	 */
 	public function getValue() {
+		$this->validator->setHtmlName($this->getHtmlId());
+		
 		$this->validator->setFormMethod($this->form->getMethod());
 		$this->validator->setHiddenInputs($this->hiddenFields->getInputs());
 		$this->validator->setQuestionInput($this->question->getQuestionName());
 		
 		$validation = $this->validator->validateForm();
-		$this->validator->setResendTime($this->configuration["resendTime"]);
+		if($validation) {
+			$this->validator->setResendTime($this->configuration["resendTime"]);
+		}
 		
 		return $validation;
 	}

@@ -37,17 +37,6 @@ class HiddenFields {
 	private $hideClass;
 	
 	/**
-	 * HiddenFields constructor.
-	 *
-	 * @param string    $htmlId
-	 * @param string    $htmlName
-	 */
-	public function __construct($htmlId, $htmlName) {
-		$this->htmlId = $htmlId;
-		$this->htmlName = $htmlName;
-	}
-	
-	/**
 	 * @return string
 	 */
 	public function getGroupId() {
@@ -93,5 +82,19 @@ class HiddenFields {
 	 */
 	public function getInputs() {
 		return $this->inputs;
+	}
+	
+	/**
+	 * @param string $htmlId
+	 */
+	public function setHtmlId($htmlId) {
+		$this->htmlId = $htmlId;
+	}
+	
+	/**
+	 * @param string $htmlName
+	 */
+	public function setHtmlName($htmlName) {
+		$this->htmlName = $htmlName;
 	}
 }

@@ -63,25 +63,17 @@ class QuestionGenerator {
 	/**
 	 * QuestionGenerator constructor.
 	 *
-	 * @param string      $htmlId
-	 * @param string      $htmlName
 	 * @param array       $numbers
 	 * @param string      $question
 	 * @param ITranslator $translator
 	 */
-	public function __construct($htmlId, $htmlName, array $numbers, $question, ITranslator $translator = null) {
-		$this->htmlName = $htmlName;
+	public function __construct(array $numbers, $question, ITranslator $translator = null) {
 		$this->numbers = $numbers;
 		$this->question = $question;
-		$this->htmlId = $htmlId;
 		
-		$this->labelPrototype = Html::el(
-			sprintf("label for='%s' style='display:block'", $this->getQuestionName())
-		);
+		$this->labelPrototype = Html::el("label style='display:block'");
 		
-		$this->inputPrototype = Html::el(
-			sprintf("input type='text' name='%s' id='%s' required", $this->getQuestionName(), $this->getQuestionId())
-		);
+		$this->inputPrototype = Html::el("input type='text' required");
 		$this->translator = $translator;
 	}
 	
@@ -128,6 +120,9 @@ class QuestionGenerator {
 		$second = $this->getRandomNumber();
 		$this->result = $result = $this->evalOperation($first, $operation, $second);
 		$this->labelPrototype->setText($this->createQuestion($first, $operation, $second));
+		$this->labelPrototype->setAttribute("for", $questionId);
+		$this->inputPrototype->setAttribute("id", $questionId);
+		$this->inputPrototype->setAttribute("name", $this->getQuestionName());
 		
 		$container->addHtml($this->labelPrototype);
 		$container->addHtml($this->inputPrototype);
@@ -226,5 +221,19 @@ class QuestionGenerator {
 	 */
 	public function setInputPrototype($inputPrototype) {
 		$this->inputPrototype = $inputPrototype;
+	}
+	
+	/**
+	 * @param string $htmlName
+	 */
+	public function setHtmlName($htmlName) {
+		$this->htmlName = $htmlName;
+	}
+	
+	/**
+	 * @param string $htmlId
+	 */
+	public function setHtmlId($htmlId) {
+		$this->htmlId = $htmlId;
 	}
 }
