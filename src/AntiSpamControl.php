@@ -2,11 +2,13 @@
 
 namespace Zet\AntiSpam;
 
+use Nette\Application\UI\Form;
 use Nette\Forms\Container;
 use Nette\Forms\Controls\BaseControl;
 use Nette\Http\Request;
 use Nette\Http\Session;
 use Nette\Utils\Html;
+use Tracy\Debugger;
 
 /**
  * Class AntiSpamControl
@@ -86,7 +88,7 @@ class AntiSpamControl extends BaseControl {
 	}
 	
 	/**
-	 * @param $form
+	 * @param Form $form
 	 */
 	protected function attached($form) {
 		parent::attached($form);
@@ -96,6 +98,16 @@ class AntiSpamControl extends BaseControl {
 		$this->question = new QuestionGenerator(
 			$this->configuration["numbers"], $this->configuration["question"], $translator
 		);
+		
+		$this->validator->setHtmlName($this->getHtmlId());
+		
+		$self = $this;
+		$form->onAnchor[] = function() use ($form, $self) {
+			if(!$form->isSubmitted()) {
+				$self->validator->setQuestionResult($self->question->getResult());
+				$self->validator->setLockTime($self->configuration["lockTime"]);
+			}
+		};
 	}
 	
 	/**
@@ -104,6 +116,7 @@ class AntiSpamControl extends BaseControl {
 	 */
 	public function setLockTime($lockTime) {
 		$this->configuration["lockTime"] = $lockTime;
+		$this->validator->setLockTime($this->configuration["lockTime"]);
 		
 		return $this;
 	}
@@ -114,6 +127,7 @@ class AntiSpamControl extends BaseControl {
 	 */
 	public function setResendTime($resendTime) {
 		$this->configuration["resendTime"] = $resendTime;
+		$this->validator->setResendTime($this->configuration["resendTime"]);
 		
 		return $this;
 	}
@@ -156,6 +170,8 @@ class AntiSpamControl extends BaseControl {
 	 * @return Html
 	 */
 	public function getControl() {
+		$this->validator->barDumpSession();
+		
 		$element = parent::getControl();
 		
 		$this->hiddenFields->setHtmlName($this->getHtmlName());
@@ -164,14 +180,9 @@ class AntiSpamControl extends BaseControl {
 		$this->question->setHtmlName($this->getHtmlName());
 		$this->question->setHtmlId($this->getHtmlId());
 		
-		$this->validator->setHtmlName($this->getHtmlId());
-		
 		$element->setName("div");
 		$element->addHtml($this->hiddenFields->getControls());
 		$element->addHtml($this->question->getQuestion());
-		
-		$this->validator->setQuestionResult($this->question->getResult());
-		$this->validator->setLockTime($this->configuration["lockTime"]);
 		
 		return $element;
 	}
@@ -196,6 +207,8 @@ class AntiSpamControl extends BaseControl {
 		
 		$validation = $this->validator->validateForm();
 		if($validation) {
+			$this->validator->setQuestionResult($this->question->getResult());
+			$this->validator->setLockTime($this->configuration["lockTime"]);
 			$this->validator->setResendTime($this->configuration["resendTime"]);
 		}
 		

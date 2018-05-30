@@ -75,6 +75,12 @@ class QuestionGenerator {
 		
 		$this->inputPrototype = Html::el("input type='text' required");
 		$this->translator = $translator;
+		
+		$first = $this->getRandomNumber();
+		$operation = $this->operation[ rand(0, 1) ];
+		$second = $this->getRandomNumber();
+		$this->result = $this->evalOperation($first, $operation, $second);
+		$this->labelPrototype->setText($this->createQuestion($first, $operation, $second));
 	}
 	
 	/**
@@ -115,11 +121,6 @@ class QuestionGenerator {
 		
 		$questionId = $this->getQuestionId();
 		
-		$first = $this->getRandomNumber();
-		$operation = $this->operation[ rand(0, 1) ];
-		$second = $this->getRandomNumber();
-		$this->result = $result = $this->evalOperation($first, $operation, $second);
-		$this->labelPrototype->setText($this->createQuestion($first, $operation, $second));
 		$this->labelPrototype->setAttribute("for", $questionId);
 		$this->inputPrototype->setAttribute("id", $questionId);
 		$this->inputPrototype->setAttribute("name", $this->getQuestionName());
@@ -130,7 +131,7 @@ class QuestionGenerator {
 		$script = Html::el("script");
 		$script->setHtml(
 			"document.getElementById('$containerId').style.display = 'none';\n" .
-			"document.getElementById('$questionId').value = $result;"
+			"document.getElementById('$questionId').value = " . $this->result . ";"
 		);
 		$container->addHtml($script);
 		
