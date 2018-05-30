@@ -170,8 +170,6 @@ class AntiSpamControl extends BaseControl {
 	 * @return Html
 	 */
 	public function getControl() {
-		$this->validator->barDumpSession();
-		
 		$element = parent::getControl();
 		
 		$this->hiddenFields->setHtmlName($this->getHtmlName());
