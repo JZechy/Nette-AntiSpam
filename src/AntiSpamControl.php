@@ -9,7 +9,6 @@ use Nette\Forms\Controls\BaseControl;
 use Nette\Http\Request;
 use Nette\Http\Session;
 use Nette\Utils\Html;
-use Tracy\Debugger;
 
 /**
  * Class AntiSpamControl
@@ -105,7 +104,13 @@ class AntiSpamControl extends BaseControl {
 			$this->configuration["numbers"], $this->configuration["question"], $translator
 		);
 		
-		$this->validator->setHtmlName($this->getHtmlId());
+		$this->validator->setHtmlName($this->getHtmlName());
+		
+		$this->hiddenFields->setHtmlName($this->getHtmlName());
+		$this->hiddenFields->setHtmlId($this->getForm()->getElementPrototype()->getAttribute("id"));
+		
+		$this->question->setHtmlName($this->getHtmlName());
+		$this->question->setHtmlId($this->getForm()->getElementPrototype()->getAttribute("id"));
 		
 		/*$self = $this;
 		$form->onAnchor[] = function() use ($form, $self) {
@@ -176,12 +181,6 @@ class AntiSpamControl extends BaseControl {
 	public function getControl() {
 		$element = parent::getControl();
 		
-		$this->hiddenFields->setHtmlName($this->getHtmlName());
-		$this->hiddenFields->setHtmlId($this->getHtmlId());
-		
-		$this->question->setHtmlName($this->getHtmlName());
-		$this->question->setHtmlId($this->getHtmlId());
-		
 		$element->setName("div");
 		$element->addHtml($this->hiddenFields->getControls());
 		$element->addHtml($this->question->getQuestion());
@@ -204,7 +203,7 @@ class AntiSpamControl extends BaseControl {
 	 * @return mixed
 	 */
 	public function getValue() {
-		$this->validator->setHtmlName($this->getHtmlId());
+		$this->validator->setHtmlName($this->getHtmlName());
 		
 		$this->validator->setFormMethod($this->form->getMethod());
 		$this->validator->setHiddenInputs($this->hiddenFields->getInputs());
