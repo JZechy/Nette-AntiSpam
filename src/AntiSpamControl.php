@@ -189,8 +189,6 @@ class AntiSpamControl extends BaseControl {
 		$this->validator->setQuestionResult($this->question->getResult());
 		$this->validator->setLockTime($this->configuration["lockTime"]);
 		
-		$this->validator->barDumpSession();
-		
 		return $element;
 	}
 	
