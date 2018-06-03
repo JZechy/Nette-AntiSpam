@@ -104,9 +104,6 @@ class AntiSpamControl extends BaseControl {
 			$this->configuration["numbers"], $this->configuration["question"], $translator
 		);
 		
-		$this->validator->setHtmlName($this->getHtmlName());
-		$this->validator->setHtmlId($this->getForm()->getElementPrototype()->getAttribute("id"));
-		
 		/*$self = $this;
 		$form->onAnchor[] = function() use ($form, $self) {
 			if(!$form->isSubmitted()) {
@@ -176,6 +173,9 @@ class AntiSpamControl extends BaseControl {
 	public function getControl() {
 		$element = parent::getControl();
 		
+		$this->validator->setHtmlName($this->getHtmlName());
+		$this->validator->setHtmlId($this->getForm()->getElementPrototype()->getAttribute("id"));
+		
 		$this->hiddenFields->setHtmlName($this->getHtmlName());
 		$this->hiddenFields->setHtmlId($this->getForm()->getElementPrototype()->getAttribute("id"));
 		
@@ -206,6 +206,8 @@ class AntiSpamControl extends BaseControl {
 	public function getValue() {
 		$this->hiddenFields->setHtmlName($this->getHtmlName());
 		$this->question->setHtmlName($this->getHtmlName());
+		$this->validator->setHtmlName($this->getHtmlName());
+		$this->validator->setHtmlId($this->getForm()->getElementPrototype()->getAttribute("id"));
 		
 		$this->validator->setHtmlName($this->getHtmlName());
 		
