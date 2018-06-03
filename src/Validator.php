@@ -45,6 +45,11 @@ class Validator {
 	private $questionInput;
 	
 	/**
+	 * @var string
+	 */
+	private $htmlId;
+	
+	/**
 	 * @var int
 	 */
 	private $error = ErrorType::NO_ERROR;
@@ -83,7 +88,7 @@ class Validator {
 	 * @return \Nette\Http\SessionSection|\stdClass
 	 */
 	public function getSessionSection() {
-		return $this->getSession()->getSection(sprintf("antispam-%s", $this->htmlName));
+		return $this->getSession()->getSection(sprintf("antispam-%s", $this->htmlId));
 	}
 	
 	/**
@@ -241,5 +246,12 @@ class Validator {
 			$this->session = new \Nette\Http\Session($this->request, new \Nette\Http\Response);
 		}
 		return $this->session;
+	}
+	
+	/**
+	 * @param string $htmlId
+	 */
+	public function setHtmlId($htmlId) {
+		$this->htmlId = $htmlId;
 	}
 }
