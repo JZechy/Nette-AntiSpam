@@ -52,11 +52,9 @@ class Validator {
 	/**
 	 * Validator constructor.
 	 *
-	 * @param Session $session
 	 * @param Request $request
 	 */
-	public function __construct(Session $session, Request $request) {
-		$this->session = $session;
+	public function __construct(Request $request) {
 		$this->request = $request;
 	}
 	
@@ -85,7 +83,7 @@ class Validator {
 	 * @return \Nette\Http\SessionSection|\stdClass
 	 */
 	public function getSessionSection() {
-		return $this->session->getSection(sprintf("antispam-%s", $this->htmlName));
+		return $this->getSession()->getSection(sprintf("antispam-%s", $this->htmlName));
 	}
 	
 	/**
@@ -226,5 +224,22 @@ class Validator {
 			$time = date("H:i:s", $this->getSessionSection()->resend);
 		}
 		Debugger::barDump("Znovuodeslání v: ". $time);
+	}
+	
+	/**
+	 * @param Session $session
+	 */
+	public function setSession(Session $session): void {
+		$this->session = $session;
+	}
+	
+	/**
+	 * @return Session
+	 */
+	public function getSession(): Session {
+		if (!$this->session) {
+			$this->session = new \Nette\Http\Session($this->request, new \Nette\Http\Response);
+		}
+		return $this->session;
 	}
 }
