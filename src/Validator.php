@@ -234,14 +234,14 @@ class Validator {
 	/**
 	 * @param Session $session
 	 */
-	public function setSession(Session $session): void {
+	public function setSession(Session $session) {
 		$this->session = $session;
 	}
 	
 	/**
 	 * @return Session
 	 */
-	public function getSession(): Session {
+	public function getSession() {
 		if (!$this->session) {
 			$this->session = new \Nette\Http\Session($this->request, new \Nette\Http\Response);
 		}
